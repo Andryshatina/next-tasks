@@ -1,10 +1,10 @@
 "use client";
-
+import TaskList from "../components/TaskList";
 const TasksPage = () => {
   return (
     <div>
       <h1>Tasks Page</h1>
-      <p>This is the tasks page.</p>
+      <TaskList />
     </div>
   );
 };
