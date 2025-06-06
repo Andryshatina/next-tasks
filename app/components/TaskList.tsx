@@ -1,25 +1,42 @@
 import type { Task } from "../types/task";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
+import { addTask, getTasksForUser } from "../lib/firebaseTasks";
+import { useSession } from "next-auth/react";
 
 const TaskList = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { data: session, status } = useSession();
 
-  const handleAddTask = (taskData: Omit<Task, "id" | "createdAt">) => {
-    const newTask: Task = {
-      ...taskData,
-      id: Date.now().toString(),
-      createdAt: Date.now(),
+  useEffect(() => {
+    const fetchTasks = async () => {
+      if (session?.user.id) {
+        const userTasks = await getTasksForUser(session?.user.id);
+        setTasks(userTasks);
+        console.log(userTasks);
+      }
     };
-    setTasks([newTask, ...tasks]);
+    fetchTasks();
+  }, [session?.user.id]);
+
+  const handleAddTask = (
+    taskData: Omit<Task, "id" | "createdAt" | "userId">
+  ) => {
+    if (session?.user) {
+      addTask({
+        ...taskData,
+        createdAt: Date.now(),
+        userId: session?.user.id,
+      });
+    }
   };
 
   return (
     <div className="div">
       <TaskForm onAddTask={handleAddTask} />
       {tasks.map((task) => (
-        <TaskItem key={task.id} task={task} />
+        <TaskItem key={task.title} task={task} />
       ))}
     </div>
   );

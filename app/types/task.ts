@@ -4,5 +4,5 @@ export type Task = {
   description?: string;
   done: boolean;
   createdAt: number;
-  userId: number;
+  userId: string;
 };

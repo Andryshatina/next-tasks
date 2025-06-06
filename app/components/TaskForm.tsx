@@ -4,7 +4,7 @@ import type { Task } from "../types/task";
 const TaskForm = ({
   onAddTask,
 }: {
-  onAddTask: (task: Omit<Task, "id" | "createdAt">) => void;
+  onAddTask: (task: Omit<Task, "id" | "createdAt" | "userId">) => void;
 }) => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -14,9 +14,8 @@ const TaskForm = ({
     if (!title.trim()) return;
     onAddTask({
       title: title.trim(),
-      description: description.trim() || undefined,
+      description: description.trim() || "",
       done: false,
-      userId: 1,
     });
     setTitle("");
     setDescription("");
