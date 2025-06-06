@@ -1,35 +1,33 @@
 import type { Task } from "../types/task";
-import { useEffect, useState } from "react";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
 import { addTask, getTasksForUser } from "../lib/firebaseTasks";
 import { useSession } from "next-auth/react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const TaskList = () => {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const { data: session, status } = useSession();
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const {
+    data: tasks = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["tasks", session?.user?.id],
+    queryFn: () => getTasksForUser(session!.user.id),
+    enabled: !!session?.user?.id,
+  });
 
-  useEffect(() => {
-    const fetchTasks = async () => {
-      if (session?.user.id) {
-        const userTasks = await getTasksForUser(session?.user.id);
-        setTasks(userTasks);
-        console.log(userTasks);
-      }
-    };
-    fetchTasks();
-  }, [session?.user.id]);
-
-  const handleAddTask = (
+  const handleAddTask = async (
     taskData: Omit<Task, "id" | "createdAt" | "userId">
   ) => {
-    if (session?.user) {
-      addTask({
-        ...taskData,
-        createdAt: Date.now(),
-        userId: session?.user.id,
-      });
-    }
+    if (!session?.user) return;
+    await addTask({
+      ...taskData,
+      createdAt: Date.now(),
+      userId: session?.user.id,
+    });
+    queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
   };
 
   return (
