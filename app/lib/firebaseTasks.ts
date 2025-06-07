@@ -8,12 +8,8 @@ import {
   query,
   where,
   orderBy,
-  //   deleteDoc,
-  //   updateDoc,
-  //   doc,
-  //   query,
-  //   where,
-  //   orderBy,
+  doc,
+  updateDoc,
 } from "firebase/firestore";
 
 export const addTask = async (task: Omit<Task, "id">) => {
@@ -39,5 +35,14 @@ export const getTasksForUser = async (userId: string) => {
   } catch (error) {
     console.error("Failed to fetch tasks:", error);
     return [];
+  }
+};
+
+export const toggleTask = async (taskId: string, curStatus: boolean) => {
+  try {
+    const docRef = doc(db, "tasks", taskId);
+    await updateDoc(docRef, { done: !curStatus });
+  } catch (error) {
+    console.error(error);
   }
 };

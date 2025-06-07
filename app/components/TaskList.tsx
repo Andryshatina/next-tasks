@@ -1,7 +1,7 @@
 import type { Task } from "../types/task";
 import TaskItem from "./TaskItem";
 import TaskForm from "./TaskForm";
-import { addTask, getTasksForUser } from "../lib/firebaseTasks";
+import { addTask, getTasksForUser, toggleTask } from "../lib/firebaseTasks";
 import { useSession } from "next-auth/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -30,11 +30,18 @@ const TaskList = () => {
     queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
   };
 
+  const handleToggle = async (TaskId: string, currStatus: boolean) => {
+    if (!session?.user) return;
+
+    await toggleTask(TaskId, currStatus);
+    queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
+  };
+
   return (
     <div className="div">
       <TaskForm onAddTask={handleAddTask} />
       {tasks.map((task) => (
-        <TaskItem key={task.title} task={task} />
+        <TaskItem key={task.id} task={task} onToggle={handleToggle} />
       ))}
     </div>
   );
