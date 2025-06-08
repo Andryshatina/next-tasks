@@ -10,6 +10,7 @@ import {
   orderBy,
   doc,
   updateDoc,
+  deleteDoc,
 } from "firebase/firestore";
 
 export const addTask = async (task: Omit<Task, "id">) => {
@@ -42,6 +43,15 @@ export const toggleTask = async (taskId: string, curStatus: boolean) => {
   try {
     const docRef = doc(db, "tasks", taskId);
     await updateDoc(docRef, { done: !curStatus });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const deleteTask = async (taskId: string) => {
+  try {
+    const docRef = doc(db, "tasks", taskId);
+    await deleteDoc(docRef);
   } catch (error) {
     console.error(error);
   }

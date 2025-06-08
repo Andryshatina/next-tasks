@@ -3,19 +3,15 @@ import type { Task } from "../types/task";
 type TaskItemProps = {
   task: Task;
   onToggle: (id: string, curStatus: boolean) => void;
+  onDelete: (id: string) => void;
 };
 
-const TaskItem = ({ task, onToggle }: TaskItemProps) => {
+const TaskItem = ({ task, onToggle, onDelete }: TaskItemProps) => {
   const { id, title, description, done } = task;
 
   const handleEdit = () => {
     //Implement edit functionality
     console.log("Edit task:", id);
-  };
-
-  const handleDelete = () => {
-    //Implement delete functionality
-    console.log("Delete task:", id);
   };
 
   return (
@@ -93,7 +89,7 @@ const TaskItem = ({ task, onToggle }: TaskItemProps) => {
           </button>
 
           <button
-            onClick={handleDelete}
+            onClick={() => onDelete(id)}
             className="rounded-xl p-2 transition-colors duration-200 hover:bg-neutral-100 dark:hover:bg-neutral-800"
             title="Delete task"
           >
