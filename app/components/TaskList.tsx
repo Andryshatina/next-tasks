@@ -6,6 +6,7 @@ import {
   deleteTask,
   getTasksForUser,
   toggleTask,
+  updateTask,
 } from "../lib/firebaseTasks";
 import { useSession } from "next-auth/react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -36,16 +37,23 @@ const TaskList = () => {
     queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
   };
 
-  const handleToggle = async (TaskId: string, currStatus: boolean) => {
+  const handleToggle = async (taskId: string, currStatus: boolean) => {
     if (!session?.user) return;
-
-    await toggleTask(TaskId, currStatus);
+    await toggleTask(taskId, currStatus);
     queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
   };
-  const handleDelete = async (TaskId: string) => {
+  const handleUpdate = async (
+    taskId: string,
+    newTitle: string,
+    newDescription: string | ""
+  ) => {
     if (!session?.user) return;
-
-    await deleteTask(TaskId);
+    await updateTask(taskId, newTitle, newDescription);
+    queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
+  };
+  const handleDelete = async (taskId: string) => {
+    if (!session?.user) return;
+    await deleteTask(taskId);
     queryClient.invalidateQueries({ queryKey: ["tasks", session.user.id] });
   };
 
@@ -115,6 +123,7 @@ const TaskList = () => {
                   task={task}
                   onToggle={handleToggle}
                   onDelete={handleDelete}
+                  onUpdate={handleUpdate}
                 />
               ))}
             </div>

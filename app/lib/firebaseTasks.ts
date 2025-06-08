@@ -48,6 +48,19 @@ export const toggleTask = async (taskId: string, curStatus: boolean) => {
   }
 };
 
+export const updateTask = async (
+  taskId: string,
+  title: string,
+  description?: string
+) => {
+  try {
+    const docRef = doc(db, "tasks", taskId);
+    await updateDoc(docRef, { title: title, description: description });
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 export const deleteTask = async (taskId: string) => {
   try {
     const docRef = doc(db, "tasks", taskId);
